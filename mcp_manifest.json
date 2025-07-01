@@ -1,0 +1,134 @@
+{
+  "name": "historia-magica",
+  "description": "Aplica\u00e7\u00e3o web responsiva que gera eBooks infantis com IA com base num prompt, faixa et\u00e1ria, estilo visual, voz e l\u00edngua.",
+  "version": "1.0.0",
+  "entry_point": "src/index.html",
+  "context": {
+    "agents": [
+      {
+        "id": "prompt-curator",
+        "description": "Transforma a ideia da crian\u00e7a num prompt estruturado com enredo, tom e personagens.",
+        "input": {
+          "prompt_usuario": "string",
+          "faixa_etaria": "enum['3-5','6-8','9-11']",
+          "lingua": "enum['pt','en','es','fr']"
+        },
+        "output": {
+          "estrutura_narrativa": {
+            "titulo": "string",
+            "personagens": [
+              "string"
+            ],
+            "cenas": [
+              "string"
+            ],
+            "tom": "string"
+          }
+        }
+      },
+      {
+        "id": "story-writer",
+        "description": "Gera a hist\u00f3ria completa em formato narrativo dividido por par\u00e1grafos.",
+        "input": {
+          "estrutura_narrativa": "objeto do agent 'prompt-curator'"
+        },
+        "output": {
+          "paragrafos": [
+            "string"
+          ]
+        }
+      },
+      {
+        "id": "image-designer",
+        "description": "Cria imagens por par\u00e1grafo, com estilo visual escolhido pelo utilizador.",
+        "input": {
+          "paragrafos": [
+            "string"
+          ],
+          "estilo_ilustracao": "enum['cartoon','flat','classico','colorido','minimalista']",
+          "faixa_etaria": "string"
+        },
+        "output": {
+          "imagens": [
+            "url"
+          ]
+        }
+      },
+      {
+        "id": "narrator",
+        "description": "Gera ficheiros de \u00e1udio (narra\u00e7\u00e3o) com base no texto e na voz selecionada.",
+        "input": {
+          "paragrafos": [
+            "string"
+          ],
+          "voz": "enum['infantil_feminina','infantil_masculina','neutro']",
+          "lingua": "string"
+        },
+        "output": {
+          "audios": [
+            "url"
+          ]
+        }
+      },
+      {
+        "id": "book-exporter",
+        "description": "Exporta o conte\u00fado final em formatos EPUB, PDF e HTML.",
+        "input": {
+          "paragrafos": [
+            "string"
+          ],
+          "imagens": [
+            "url"
+          ],
+          "audios": [
+            "url"
+          ]
+        },
+        "output": {
+          "epub": "url",
+          "pdf": "url",
+          "html": "url",
+          "zip_completo": "url"
+        }
+      }
+    ],
+    "workflow": {
+      "start": "prompt-curator",
+      "sequence": [
+        "prompt-curator",
+        "story-writer",
+        "image-designer",
+        "narrator",
+        "book-exporter"
+      ]
+    }
+  },
+  "deployment": {
+    "platform": "netlify",
+    "github": {
+      "repository_url": "https://github.com/carlosbmoreira/historia-magica",
+      "branch": "main"
+    },
+    "build": {
+      "tool": "vite",
+      "command": "npm run build",
+      "output_directory": "dist"
+    }
+  },
+  "ui": {
+    "responsive": true,
+    "framework": "react",
+    "styling": "tailwind",
+    "components": [
+      "InputPrompt",
+      "DropdownFaixaEtaria",
+      "DropdownIlustracao",
+      "DropdownVoz",
+      "DropdownLingua",
+      "BotaoGerarLivro",
+      "FlipbookViewer",
+      "AreaDownload"
+    ]
+  },
+  "notes": "O projeto usa modelos gratuitos da Hugging Face (texto, imagem, TTS). A fase inicial visa gerar conte\u00fado com estilo infantil e output em eBook. Est\u00e1 preparado para escalar para app mobile mais tarde."
+}
